@@ -14,6 +14,8 @@ import java.util.Set;
 public class GivingRecord implements Comparable<GivingRecord>
 {
     private static final SimpleDateFormat SDF = new SimpleDateFormat("MM/dd/yyyy");
+
+    private String id;
     private String dateString;
     private String lastName;
     private String firstName;
@@ -27,8 +29,10 @@ public class GivingRecord implements Comparable<GivingRecord>
         categorizedAmounts = new HashMap<String, Double>();
     }
 
+    // Pre-1.2 schema constructor
     public GivingRecord(String dateString, String lastName, String firstName, String fundType, String checkNumber)
     {
+        this.id = id;
         this.dateString = dateString;
         try {
             this.date = SDF.parse(dateString);
@@ -41,6 +45,23 @@ public class GivingRecord implements Comparable<GivingRecord>
         this.checkNumber = checkNumber;
         categorizedAmounts = new HashMap<String, Double>();
     }
+
+    public GivingRecord(String id, String dateString, String lastName, String firstName, String fundType, String checkNumber)
+    {
+        this.id = id;
+        this.dateString = dateString;
+        try {
+            this.date = SDF.parse(dateString);
+        } catch (ParseException e) {
+            System.err.println("Record has invalid date string " + dateString);
+        }
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.fundType = fundType;
+        this.checkNumber = checkNumber;
+        categorizedAmounts = new HashMap<String, Double>();
+    }
+
 
     public String getDateString()
     {
@@ -61,6 +82,10 @@ public class GivingRecord implements Comparable<GivingRecord>
             System.err.println("Invalid date string " + dateString);
         }
     }
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
 
     public String getLastName()
     {
@@ -102,6 +127,11 @@ public class GivingRecord implements Comparable<GivingRecord>
         this.checkNumber = checkNumber; 
     }
 
+    public Map<String, Double> getCategorizedAmounts() { return categorizedAmounts; }
+
+    public void setCategorizedAmounts(Map<String, Double> categorizedAmounts) { this.categorizedAmounts = categorizedAmounts; }
+
+
     public Double getAmountForCategory(String category)
     {
         if (categorizedAmounts.containsKey(category)) {
@@ -126,6 +156,7 @@ public class GivingRecord implements Comparable<GivingRecord>
 
     public void update(GivingRecord record)
     {
+        setId(record.getId());
         setDateString(record.getDateString());
         setLastName(record.getLastName());
         setFirstName(record.getFirstName());
@@ -137,6 +168,7 @@ public class GivingRecord implements Comparable<GivingRecord>
     public String toBasicString()
     {
         final StringBuilder sb = new StringBuilder();
+        sb.append(id + ", ");
         sb.append(dateString + ", ");
         sb.append(lastName + ", ");
         sb.append(firstName + ", ");
@@ -155,7 +187,8 @@ public class GivingRecord implements Comparable<GivingRecord>
     {
         final StringBuilder sb = new StringBuilder();
         sb.append("GivingRecord [");
-        sb.append("dateString=" + dateString);
+        sb.append("id=" + id);
+        sb.append(", dateString=" + dateString);
         sb.append(", lastName=" + lastName);
         sb.append(", firstName=" + firstName);
         sb.append(", fundType=" + fundType);
@@ -172,7 +205,8 @@ public class GivingRecord implements Comparable<GivingRecord>
     public String toCsv()
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append(dateString);
+        sb.append(id);
+        sb.append("," + dateString);
         sb.append("," + lastName);
         sb.append("," + firstName);
         sb.append("," + fundType);
@@ -194,12 +228,13 @@ public class GivingRecord implements Comparable<GivingRecord>
         try {
             final String[] tokens = csv.split(",");
             int tokenIndex = 0;
+            final String id = tokens[tokenIndex++].trim();
             final String dateString = tokens[tokenIndex++].trim();
             final String lastName = tokens[tokenIndex++].trim();
             final String firstName = tokens[tokenIndex++].trim();
             final String fundType = tokens[tokenIndex++].trim();
             final String checkNumber = tokens[tokenIndex++].trim();
-            final GivingRecord record = new GivingRecord(dateString, lastName, firstName, fundType, checkNumber);
+            final GivingRecord record = new GivingRecord(id, dateString, lastName, firstName, fundType, checkNumber);
             final String[] categories = Arrays.copyOfRange(headers, tokenIndex, headers.length - 1);
             final List<String> definedCategories = Settings.getInstance().getCategories();
             for (String category : categories) {

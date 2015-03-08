@@ -9,13 +9,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 
 import us.wardware.firstfruits.GivingRecord;
+import us.wardware.firstfruits.RecordManager;
 import us.wardware.firstfruits.Settings;
 
 
@@ -97,7 +103,30 @@ public class GivingRecordsReader
            br.close();
         }
     }
-    
+
+    public static Set<GivingRecord> readRecordsFromDatabase() {
+        final Set<GivingRecord> records = new HashSet<GivingRecord>();
+
+        RecordManager recordManager = RecordManager.getInstance();
+        DBCollection collection = recordManager.getCollection();
+        // DBCursor cursor = collection.find().sort(new BasicDBObject("offeringDate", 1).append("dateString", 1));
+        DBCursor cursor = collection.find();
+
+        try {
+            while (cursor.hasNext()) {
+                DBObject cur = cursor.next();
+                final GivingRecord record = fromSchemaVersion12Database(cur);
+                records.add(record);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return records;
+    }
+
+
+
     public static Set<GivingRecord> readRecordsFromFile(File file, boolean encrypted) throws IOException, ParseException, FileException
     {
         final Set<GivingRecord> records = new HashSet<GivingRecord>();
@@ -200,6 +229,8 @@ public class GivingRecordsReader
             return fromSchemaVersion10Csv(csv, headers);
         } else if (schemaVersion.equals(SchemaSettings.VERSION_1_1)) {
             return fromSchemaVersion11Csv(csv, headers);
+        } else if (schemaVersion.equals(SchemaSettings.VERSION_1_2)) {
+            return fromSchemaVersion12Csv(csv, headers);
         }
         return null;
     }
@@ -249,4 +280,57 @@ public class GivingRecordsReader
             throw new ParseException(csv, 0);
         }
     }
+
+    public static GivingRecord fromSchemaVersion12Csv(String csv, String[] headers) throws ParseException
+    {
+        try {
+            final String[] tokens = csv.split(",");
+            int tokenIndex = 0;
+            final String id = tokens[tokenIndex++].trim();
+            final String dateString = tokens[tokenIndex++].trim();
+            final String lastName = tokens[tokenIndex++].trim();
+            final String firstName = tokens[tokenIndex++].trim();
+            final String fundType = tokens[tokenIndex++].trim();
+            final String checkNumber = tokens[tokenIndex++].trim();
+            final GivingRecord record = new GivingRecord(id, dateString, lastName, firstName, fundType, checkNumber);
+            final String[] categories = Arrays.copyOfRange(headers, tokenIndex, headers.length - 1);
+            final List<String> definedCategories = Settings.getInstance().getCategories();
+            for (String category : categories) {
+                if (definedCategories.contains(category)) {
+                    record.setAmountForCategory(category, Double.parseDouble(tokens[tokenIndex++]));
+                }
+            }
+            return record;
+        } catch (Exception e) {
+            throw new ParseException(csv, 0);
+        }
+    }
+
+    public static GivingRecord fromSchemaVersion12Database(DBObject currentRecord)
+    {
+
+        @SuppressWarnings("unchecked")
+        final Map<String, Object> currentMap = currentRecord.toMap();
+
+        // ToDo: all references to column name keys should be centrally defined constants
+        final String id = currentMap.get("_id").toString();
+        final String dateString = currentMap.get("dateString").toString();
+        final String lastName = currentMap.get("lastName").toString();
+        final String firstName = currentMap.get("firstName").toString();
+        final String fundType = currentMap.get("fundType").toString();
+        final String checkNumber = currentMap.get("checkNumber").toString();
+        final DBObject offeringAmountsByCategoryRecord = (DBObject) currentRecord.get("categorizedAmounts");
+        @SuppressWarnings("unchecked")
+        final Map<String, Object> offeringAmountsByCategory = offeringAmountsByCategoryRecord.toMap();
+
+        final GivingRecord record = new GivingRecord(id, dateString, lastName, firstName, fundType, checkNumber);
+        final List<String> definedCategories = Settings.getInstance().getCategories();
+        for (Map.Entry<String, Object> offeringAmountForCategory : offeringAmountsByCategory.entrySet()) {
+            if (definedCategories.contains(offeringAmountForCategory.getKey())) {
+                record.setAmountForCategory(offeringAmountForCategory.getKey(), Double.parseDouble(offeringAmountForCategory.getValue().toString()));
+            }
+        }
+        return record;
+    }
+
 }

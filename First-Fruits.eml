@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="1.7" jdk_type="JavaSDK">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="commons-lang3-3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/commons-lang3-3.1.jar!/"/>
+	</lib>
+	<lib name="microba-0.4.4.3.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/microba-0.4.4.3.jar!/"/>
+	</lib>
+	<lib name="dynamicreports-adhoc-3.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/dist/dynamicreports-adhoc-3.1.0.jar!/"/>
+	</lib>
+	<lib name="dynamicreports-core-3.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/dist/dynamicreports-core-3.1.0.jar!/"/>
+	</lib>
+	<lib name="dynamicreports-examples-3.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/dist/dynamicreports-examples-3.1.0.jar!/"/>
+	</lib>
+	<lib name="commons-collections-3.2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/commons-collections-3.2.1.jar!/"/>
+	</lib>
+	<lib name="commons-lang-2.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/commons-lang-2.5.jar!/"/>
+	</lib>
+	<lib name="commons-logging-1.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/commons-logging-1.1.1.jar!/"/>
+	</lib>
+	<lib name="itext-2.1.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/itext-2.1.7.jar!/"/>
+	</lib>
+	<lib name="jasperreports-4.7.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/jasperreports-4.7.1.jar!/"/>
+	</lib>
+	<lib name="jcommon-1.0.15.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/jcommon-1.0.15.jar!/"/>
+	</lib>
+	<lib name="jfreechart-1.0.12.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/jfreechart-1.0.12.jar!/"/>
+	</lib>
+	<lib name="jxl-2.6.10.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/jxl-2.6.10.jar!/"/>
+	</lib>
+	<lib name="log4j-1.2.14.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/log4j-1.2.14.jar!/"/>
+	</lib>
+	<lib name="poi-3.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/poi-3.7.jar!/"/>
+	</lib>
+	<lib name="jdtcore-3.1.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/jdtcore-3.1.0.jar!/"/>
+	</lib>
+	<lib name="commons-digester-2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/commons-digester-2.1.jar!/"/>
+	</lib>
+	<lib name="spring-core-2.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/spring-core-2.5.jar!/"/>
+	</lib>
+	<lib name="spring-beans-2.5.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/DynamicReports/libs/spring-beans-2.5.jar!/"/>
+	</lib>
+	<lib name="commons-codec-1.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/commons-codec-1.7.jar!/"/>
+	</lib>
+	<levels>
+		<level name="mongo-java-driver-2.13.0" value="project"/>
+	</levels>
+</component>

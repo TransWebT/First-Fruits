@@ -2,8 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "First Fruits"
-#define MyAppVersion "1.0"
-#define MyAppPublisher "WardWare"
+#define MyAppVersion "1.2"
+#define MyAppPublisher "WardWare with database extensions from RecreationalCoding.com"
 #define MyAppURL "http://www.wardware.com/"
 #define MyAppExeName "FirstFruits.jar"
 #define MyAppIcon "C:\Projects\FirstFruits\FirstFruitsLogo.ico"

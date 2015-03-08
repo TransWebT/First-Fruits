@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="libs/DynamicReports/libs/spring-core-2.5.jar"/>
 	<classpathentry kind="lib" path="libs/DynamicReports/libs/spring-beans-2.5.jar"/>
 	<classpathentry kind="lib" path="libs/commons-codec-1.7.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/mongo-java-driver-2.13.0"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

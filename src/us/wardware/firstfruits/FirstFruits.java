@@ -1,5 +1,6 @@
 package us.wardware.firstfruits;
 
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -11,7 +12,7 @@ import us.wardware.firstfruits.ui.SettingsDialog;
 
 public class FirstFruits
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws UnknownHostException
     {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

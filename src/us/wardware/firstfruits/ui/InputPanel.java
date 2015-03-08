@@ -36,6 +36,10 @@ import com.michaelbaranov.microba.calendar.DatePicker;
 public class InputPanel extends JPanel implements Observer
 {
     private static final SimpleDateFormat SDF = new SimpleDateFormat("MM/dd/yyyy");
+    // ToDo: We may add a readonly text field to show the document/record id value.
+    //       Currently, FirstFruits hold all records from a CSV file in-memory, but when
+    //       this is converted to a traditional persistence layer, we'll need to carry along the record id.
+    // private JTextField idText;
     private AutoComboBox lastNameCombo;
     private AutoComboBox firstNameCombo;
     private JComboBox<String> fundType;

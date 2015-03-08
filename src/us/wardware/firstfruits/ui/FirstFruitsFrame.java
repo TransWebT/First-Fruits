@@ -126,6 +126,14 @@ public class FirstFruitsFrame extends JFrame implements Observer
         final JMenuItem open = new JMenuItem(new TextAction("Open") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                // ToDo: Add option to open either a file or a database
+                try {
+                    openDatabase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
+                }
+                /*
                 try {
                     openFile();
                 } catch (IOException e) {
@@ -134,6 +142,7 @@ public class FirstFruitsFrame extends JFrame implements Observer
                     JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
                     e.printStackTrace();
                 }
+                */
             }
         });
         open.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/open16.png")));
@@ -330,6 +339,13 @@ public class FirstFruitsFrame extends JFrame implements Observer
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
+                    openDatabase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
+                }
+                /*
+                try {
                     openFile();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -337,6 +353,7 @@ public class FirstFruitsFrame extends JFrame implements Observer
                     JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
                     e.printStackTrace();
                 }
+                */
             }
         });
         openButton.setToolTipText("Open");
@@ -508,9 +525,9 @@ public class FirstFruitsFrame extends JFrame implements Observer
     
     private void showRemoveFromRecentList(JMenuItem menuItem, String fileName)
     {
-        final int choice = JOptionPane.showConfirmDialog(FirstFruitsFrame.this, 
-                        "The specified file no longer exists. Would you like to remove it from the list?", "File Not Found", 
-                        JOptionPane.YES_NO_OPTION);
+        final int choice = JOptionPane.showConfirmDialog(FirstFruitsFrame.this,
+                "The specified file no longer exists. Would you like to remove it from the list?", "File Not Found",
+                JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
             recentFilesMenu.remove(menuItem);
             Settings.getInstance().removeRecentFile(fileName);
@@ -682,7 +699,23 @@ public class FirstFruitsFrame extends JFrame implements Observer
             setCursor(Cursor.getDefaultCursor());
         }
     }
-        
+
+    private void openDatabase()
+    {
+        /*
+        if (!confirmUnsavedChanges()) {
+            return;
+        }
+        */
+        final List<GivingRecord> records = new ArrayList<GivingRecord>();
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        records.addAll(GivingRecordsReader.readRecordsFromDatabase());
+        setTitle("First Fruits - Database");
+        RecordManager.getInstance().setRecords(records);
+        setCursor(Cursor.getDefaultCursor());
+    }
+
+
     private boolean promptForPassword(File f, String password) 
     {
         if (password.isEmpty()) {

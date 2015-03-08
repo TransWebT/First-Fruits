@@ -1,5 +1,6 @@
 package us.wardware.firstfruits;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +12,15 @@ import java.util.Observer;
 import java.util.Set;
 
 import us.wardware.firstfruits.util.DateUtils;
+
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 
 public class RecordManager extends Observable implements Observer
 {
@@ -24,6 +34,10 @@ public class RecordManager extends Observable implements Observer
     private GivingRecord lastUpdated;
     private String selectedDate;
     private RecordFilter recordFilter;
+    
+    private MongoClient client = null;
+    private DB database = null;
+    private DBCollection collection = null;
 
     public static RecordManager getInstance()
     {
@@ -46,6 +60,17 @@ public class RecordManager extends Observable implements Observer
         unsavedChanges = false;
         recordFilter = new RecordFilter();
         Settings.getInstance().addObserver(this);
+
+        // ToDo: Move these hard-coded settings to a property file.
+        // ToDo: The end-state is to allow selection of the database/collection from the UI.
+		try {
+			client = new MongoClient(new ServerAddress("localhost", 27017));
+	        database = client.getDB("FirstFruits");
+	        setCollection(database.getCollection("offerings"));
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 
     public void updateRecord(GivingRecord record)
@@ -54,11 +79,13 @@ public class RecordManager extends Observable implements Observer
         if (selectedRecord != null) {
             selectedRecord.update(record);
             lastUpdated = selectedRecord;
+            updateDbRecord(record);
             setChanged();
             notifyObservers(selectedRecord);
         } else {
             lastUpdated = record;
             records.add(record);
+            insertDbRecord(record);
             setChanged();
             notifyObservers(records);
             if (!uniqueLastNames.contains(record.getLastName())) {
@@ -68,6 +95,70 @@ public class RecordManager extends Observable implements Observer
             }
             
             updateFirstNamesForLastName(record.getLastName(), record.getFirstName());
+        }
+    }
+
+    // Update existing MongoDB document
+    private void updateDbRecord(GivingRecord record)
+    {
+        if (collection == null) {
+            System.out.println("No available database collection - skipping MongoDB archive.");
+            return;
+        }
+        if (record.getId() == null || record.getId().length() < 1) {
+            System.out.println("Request to save existing record to the database without a valid record Id.");
+            return;
+        }
+
+        BasicDBObject dbAmountsObject = new BasicDBObject();
+        for (String category : Settings.getInstance().getCategories()) {
+            if (record.getCategorizedAmounts().containsKey(category)) {
+                dbAmountsObject.append(category, record.getAmountForCategory(category));
+            }
+        }
+
+        DBObject dbRecord = new BasicDBObject("dateString", record.getDateString())
+                .append("lastName", record.getLastName())
+                .append("firstName", record.getFirstName())
+                .append("fundType", record.getFundType())
+                .append("checkNumber", record.getCheckNumber())
+                .append("categorizedAmounts", dbAmountsObject);
+        try {
+            collection.update(new BasicDBObject("_id", record.getId()), dbRecord, false, false);
+        } catch (MongoException.DuplicateKey e) {
+            System.out.println("Offering Id already in use: " + dbRecord);
+        }
+    }
+
+    // Insert existing MongoDB document
+    private void insertDbRecord(GivingRecord record)
+    {
+        if (collection == null) {
+            System.out.println("No available database collection - skipping MongoDB archive.");
+            return;
+        }
+        if (record.getId() != null && record.getId().length() > 0) {
+            System.out.println("Request to insert a duplicate copy of an existing record to the database.");
+            return;
+        }
+
+        BasicDBObject dbAmountsObject = new BasicDBObject();
+        for (String category : Settings.getInstance().getCategories()) {
+            if (record.getCategorizedAmounts().containsKey(category)) {
+                dbAmountsObject.append(category, record.getAmountForCategory(category));
+            }
+        }
+
+        DBObject dbRecord = new BasicDBObject("dateString", record.getDateString())
+                .append("lastName", record.getLastName())
+                .append("firstName", record.getFirstName())
+                .append("fundType", record.getFundType())
+                .append("checkNumber", record.getCheckNumber())
+                .append("categorizedAmounts", dbAmountsObject);
+        try {
+            collection.insert(dbRecord);
+        } catch (MongoException.DuplicateKey e) {
+            System.out.println("Offering Id already in use: " + dbRecord);
         }
     }
 
@@ -289,4 +380,12 @@ public class RecordManager extends Observable implements Observer
             unsavedChanges = true;
         }
     }
+
+	public DBCollection getCollection() {
+		return collection;
+	}
+
+	public void setCollection(DBCollection collection) {
+		this.collection = collection;
+	}
 }
