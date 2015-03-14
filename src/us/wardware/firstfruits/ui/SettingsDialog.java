@@ -44,6 +44,7 @@ public class SettingsDialog extends JDialog
     private JSplitPane splitPane;
     private GeneralPanel generalPanel;
     private CategoriesPanel categoriesPanel;
+    private DatabasesPanel databasesPanel;
     private JPanel rightPanel;
     private JPanel buttonPanel;
     private boolean initialSetup;
@@ -54,6 +55,8 @@ public class SettingsDialog extends JDialog
     private static final String WELCOME = "Welcome";
     private static final String GENERAL = "General";
     private static final String CATEGORIES = "Categories";
+    private static final String DATABASES = "Database";
+
 
     public SettingsDialog(JFrame parent, boolean initialSetup)
     {
@@ -277,6 +280,47 @@ public class SettingsDialog extends JDialog
         }
     }
 
+
+    private class DatabasesPanel extends JPanel
+    {
+        private JPanel contents;
+
+        private Map<String, JTextField> inputMap = new HashMap<String, JTextField>();
+
+        public DatabasesPanel()
+        {
+            this.setLayout(new BorderLayout());
+            contents = new JPanel(new GridBagLayout());
+            contents.setBorder(new TitledBorder("Database Configuration"));
+            addNamedInputFields(Settings.DATABASE_CONFIG_NAME, "Configuration Name", 0);
+            addNamedInputFields(Settings.DATABASE_SERVER, "Server Name", 1);
+            addNamedInputFields(Settings.DATABASE_PORT, "Port Number", 2);
+            addNamedInputFields(Settings.DATABASE_NAME, "Database Name", 3);
+            addNamedInputFields(Settings.DATABASE_COLLECTION_NAME, "Collection Name", 4);
+            add(contents, BorderLayout.NORTH);
+        }
+
+        private void addNamedInputFields(String settingsKey, String text, int y)
+        {
+            final JLabel label = new JLabel(text);
+            label.setHorizontalAlignment(JLabel.RIGHT);
+            contents.add(label, Gbc.xyi(0, y, 2).east());
+
+            final JTextField valueField = new JTextField(Settings.getInstance().getStringValue(settingsKey));
+            contents.add(valueField, Gbc.xyi(1, y, 2).horizontal());
+            inputMap.put(settingsKey, valueField);
+        }
+
+        public void saveSettings()
+        {
+            for (String key : inputMap.keySet()) {
+                Settings.getInstance().setStringValue(key, inputMap.get(key).getText().trim());
+            }
+        }
+    }
+
+
+
     private void initComponents()
     {
         setLayout(new BorderLayout());
@@ -294,14 +338,17 @@ public class SettingsDialog extends JDialog
         welcomePanel = new WelcomePanel();
         generalPanel = new GeneralPanel();
         categoriesPanel = new CategoriesPanel();
-        
+        databasesPanel = new DatabasesPanel();
+
+
         steps.add(welcomePanel);
         steps.add(generalPanel);
         steps.add(categoriesPanel);
-      
-        optionsList = new JList<String>(new String[]{GENERAL, CATEGORIES});
+        steps.add(databasesPanel);
+
+        optionsList = new JList<String>(new String[]{GENERAL, CATEGORIES, DATABASES});
         if (initialSetup) {
-            optionsList = new JList<String>(new String[]{WELCOME, GENERAL, CATEGORIES});
+            optionsList = new JList<String>(new String[]{WELCOME, GENERAL, CATEGORIES, DATABASES});
         }
         optionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionsList.addListSelectionListener(new ListSelectionListener() {
@@ -314,7 +361,9 @@ public class SettingsDialog extends JDialog
                 } else if (GENERAL.equals(selection)) {
                     rightPanel.add(generalPanel, BorderLayout.NORTH);
                 } else if (CATEGORIES.equals(selection)) {
-                    rightPanel.add(categoriesPanel, BorderLayout.CENTER);
+                    rightPanel.add(categoriesPanel, BorderLayout.NORTH);
+                } else if (DATABASES.equals(selection)) {
+                    rightPanel.add(databasesPanel, BorderLayout.CENTER);
                 }
                 rightPanel.invalidate();
                 rightPanel.updateUI();
@@ -420,6 +469,7 @@ public class SettingsDialog extends JDialog
     {
         generalPanel.saveSettings();
         categoriesPanel.saveSettings();
+        databasesPanel.saveSettings();
     }
     
     public static void main(String[] args)

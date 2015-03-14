@@ -61,8 +61,8 @@ public class FirstFruitsFrame extends JFrame implements Observer
     private JMenu reportsMenu;
     private JButton reportButton;
     private JButton reportAllButton;
-    private JMenuItem saveItem;
-    private JMenuItem saveAsItem;
+    private JMenuItem saveFileItem;
+    private JMenuItem saveFileAsItem;
     private JLabel lastEntryLabel;
     private JLabel recordCountLabel;
     private AbstractButton offeringReportButton;
@@ -123,17 +123,25 @@ public class FirstFruitsFrame extends JFrame implements Observer
         newItem.setMnemonic('N');
         fileMenu.add(newItem);
         
-        final JMenuItem open = new JMenuItem(new TextAction("Open") {
+        final JMenuItem openDatabaseItem = new JMenuItem(new TextAction("Open Database") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                // ToDo: Add option to open either a file or a database
                 try {
-                    openDatabase();
+                    openDatabaseWithFixedConnectInfo();
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
                 }
-                /*
+            }
+        });
+        openDatabaseItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/open16.png")));
+        openDatabaseItem.setMnemonic('O');
+        fileMenu.add(openDatabaseItem);
+
+
+        final JMenuItem loadFileItem = new JMenuItem(new TextAction("Import File") {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
                 try {
                     openFile();
                 } catch (IOException e) {
@@ -142,14 +150,14 @@ public class FirstFruitsFrame extends JFrame implements Observer
                     JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
                     e.printStackTrace();
                 }
-                */
             }
         });
-        open.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/open16.png")));
-        open.setMnemonic('O');
-        fileMenu.add(open);
-        
-        saveItem = new JMenuItem(new TextAction("Save") {
+        loadFileItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/open16.png")));
+        loadFileItem.setMnemonic('I');
+        fileMenu.add(loadFileItem);
+
+
+        saveFileItem = new JMenuItem(new TextAction("Export File") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
@@ -159,12 +167,12 @@ public class FirstFruitsFrame extends JFrame implements Observer
                 }
             }
         });
-        saveItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/save16.png")));
-        saveItem.setMnemonic('S');
-        saveItem.setEnabled(false);
-        fileMenu.add(saveItem);
-        
-        saveAsItem = new JMenuItem(new TextAction("Save As..") {
+        saveFileItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/save16.png")));
+        saveFileItem.setMnemonic('S');
+        saveFileItem.setEnabled(false);
+        fileMenu.add(saveFileItem);
+
+        saveFileAsItem = new JMenuItem(new TextAction("Export File As..") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
@@ -174,10 +182,10 @@ public class FirstFruitsFrame extends JFrame implements Observer
                 }
             }
         });
-        saveAsItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/saveas16.png")));
-        saveAsItem.setMnemonic('A');
-        saveAsItem.setEnabled(false);
-        fileMenu.add(saveAsItem);
+        saveFileAsItem.setIcon(new ImageIcon(FirstFruitsFrame.class.getResource("/icons/saveas16.png")));
+        saveFileAsItem.setMnemonic('A');
+        saveFileAsItem.setEnabled(false);
+        fileMenu.add(saveFileAsItem);
         
         fileMenu.add(new JSeparator());
         
@@ -339,7 +347,7 @@ public class FirstFruitsFrame extends JFrame implements Observer
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
-                    openDatabase();
+                    openDatabaseWithFixedConnectInfo();
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(FirstFruitsFrame.this, e.getMessage());
@@ -700,7 +708,7 @@ public class FirstFruitsFrame extends JFrame implements Observer
         }
     }
 
-    private void openDatabase()
+    private void openDatabaseWithFixedConnectInfo()
     {
         /*
         if (!confirmUnsavedChanges()) {
@@ -893,8 +901,8 @@ public class FirstFruitsFrame extends JFrame implements Observer
             boolean hasRecords = RecordManager.getInstance().getAllRecords().size() > 0;
             boolean hasUnsavedChanges = RecordManager.getInstance().hasUnsavedChanges();
             saveButton.setEnabled(hasUnsavedChanges);
-            saveItem.setEnabled(hasUnsavedChanges);
-            saveAsItem.setEnabled(hasRecords);
+            saveFileItem.setEnabled(hasUnsavedChanges);
+            saveFileAsItem.setEnabled(hasRecords);
             reportsMenu.setEnabled(hasRecords);
             reportButton.setEnabled(hasRecords);
             reportAllButton.setEnabled(hasRecords);

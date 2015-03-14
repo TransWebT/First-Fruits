@@ -11,6 +11,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
 import us.wardware.firstfruits.util.DateUtils;
 
 import com.mongodb.AggregationOutput;
@@ -64,9 +65,17 @@ public class RecordManager extends Observable implements Observer
         // ToDo: Move these hard-coded settings to a property file.
         // ToDo: The end-state is to allow selection of the database/collection from the UI.
 		try {
+            client = new MongoClient(new ServerAddress(
+                                Settings.getInstance().getStringValue(Settings.DATABASE_SERVER),
+                                Integer.parseInt(Settings.getInstance().getStringValue(Settings.DATABASE_PORT))));
+            database = client.getDB(Settings.getInstance().getStringValue(Settings.DATABASE_NAME));
+            setCollection(database.getCollection(Settings.getInstance().getStringValue(Settings.DATABASE_COLLECTION_NAME)));
+
+            /*
 			client = new MongoClient(new ServerAddress("localhost", 27017));
 	        database = client.getDB("FirstFruits");
 	        setCollection(database.getCollection("offerings"));
+	        */
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -98,6 +107,7 @@ public class RecordManager extends Observable implements Observer
         }
     }
 
+    // ToDo: for consistency, review organization of database-related I/O code in RecordManager, GivingRecordsReader and GivingRecordsWriter.
     // Update existing MongoDB document
     private void updateDbRecord(GivingRecord record)
     {
@@ -157,6 +167,7 @@ public class RecordManager extends Observable implements Observer
                 .append("categorizedAmounts", dbAmountsObject);
         try {
             collection.insert(dbRecord);
+            record.setId(dbRecord.get("_id").toString());
         } catch (MongoException.DuplicateKey e) {
             System.out.println("Offering Id already in use: " + dbRecord);
         }
@@ -263,6 +274,31 @@ public class RecordManager extends Observable implements Observer
             notifyObservers(records);
         }
     }
+
+    // ToDo: move this and other db operations to GivingRecordsReader/GivingRecordsWriter for consistency
+    // Delete one or more existing MongoDB documents
+    public void deleteDbRecords(List<GivingRecord> toRemove)
+    {
+        if (collection == null) {
+            System.out.println("No available database collection - skipping MongoDB deletion.");
+            return;
+        }
+
+        for (GivingRecord record : toRemove) {
+            if (record.getId() == null || record.getId().length() < 1) {
+                System.out.println("Request to save existing record to the database without a valid record Id.");
+                continue;
+            }
+            BasicDBObject removeObject = new BasicDBObject("_id", new ObjectId(record.getId()));
+            System.out.println("Deleting object: " + removeObject.toString());
+            collection.remove(removeObject);
+        }
+
+        // Remove items from in-memory list
+        deleteRecords(toRemove);
+    }
+
+
 
     public int getSelectionCount()
     {

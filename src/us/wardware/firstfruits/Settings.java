@@ -25,6 +25,11 @@ public class Settings extends Observable
     public static final String REGISTRATION_KEY = "Registration";
     public static final String REGISTRATION_NAME = "RegistrationName";
     public static final String RECENT_FILES_KEY = "RecentFiles";
+    public static final String DATABASE_CONFIG_NAME = "DatabaseConfigName";
+    public static final String DATABASE_SERVER = "DatabaseServer";
+    public static final String DATABASE_PORT = "DatabasePort";
+    public static final String DATABASE_NAME = "DatabaseName";
+    public static final String DATABASE_COLLECTION_NAME = "DatabaseCollectionName";
     
     private static Settings INSTANCE;
     private Preferences preferences;

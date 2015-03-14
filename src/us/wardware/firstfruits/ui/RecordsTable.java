@@ -138,7 +138,7 @@ public class RecordsTable extends JTable implements Observer
                             JOptionPane.YES_NO_CANCEL_OPTION);
             if (choice == JOptionPane.YES_OPTION) {
                 final List<GivingRecord> records = model.getRecords(selectedRows);
-                RecordManager.getInstance().deleteRecords(records);
+                RecordManager.getInstance().deleteDbRecords(records);
                 return true;
             }
         }
