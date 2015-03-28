@@ -553,7 +553,7 @@ public class FirstFruitsFrame extends JFrame implements Observer
         JOptionPane.showMessageDialog(this, 
                         "<HTML><B>First Fruits</B>" +
                         "<BR>Version: " + p.getProperty("version") + 
-                        "<BR>(c) Copyright WardWare 2012, 2013.  All rights reserved.<HTML>", "About First Fruits", 
+                        "<BR>(c) Copyright<BR>WardWare 2012, 2013;<BR>RecreationalCoding.com 2015<BR>All rights reserved.<HTML>", "About First Fruits", 
                         JOptionPane.INFORMATION_MESSAGE,
                         new ImageIcon(FirstFruitsFrame.class.getResource("/icons/logo48.png")));
     }

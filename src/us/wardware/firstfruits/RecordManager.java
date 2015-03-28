@@ -62,14 +62,28 @@ public class RecordManager extends Observable implements Observer
         recordFilter = new RecordFilter();
         Settings.getInstance().addObserver(this);
 
-        // ToDo: Move these hard-coded settings to a property file.
-        // ToDo: The end-state is to allow selection of the database/collection from the UI.
+		if (Settings.getInstance().getStringValue(Settings.DATABASE_SERVER)==null ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_SERVER).length()<1 ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_PORT)==null ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_PORT).length()<1 ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_NAME)==null ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_NAME).length()<1 ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_COLLECTION_NAME)==null ||
+			Settings.getInstance().getStringValue(Settings.DATABASE_COLLECTION_NAME).length()<1
+			)
+		{
+            System.out.println("MongoDB database configuration not set - skipping.");
+            return;
+		}
+
 		try {
             client = new MongoClient(new ServerAddress(
                                 Settings.getInstance().getStringValue(Settings.DATABASE_SERVER),
                                 Integer.parseInt(Settings.getInstance().getStringValue(Settings.DATABASE_PORT))));
             database = client.getDB(Settings.getInstance().getStringValue(Settings.DATABASE_NAME));
             setCollection(database.getCollection(Settings.getInstance().getStringValue(Settings.DATABASE_COLLECTION_NAME)));
+            // ToDo: set this in order handle file save messages on exit
+            // setDatasourceType(Settings.getInstance().DatasourceType.MONGODB);
 
             /*
 			client = new MongoClient(new ServerAddress("localhost", 27017));
