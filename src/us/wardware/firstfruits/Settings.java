@@ -12,10 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Settings extends Observable
 {
-	enum DatasourceType {
+	public enum DatasourceType {
 		CSV_FILE, MONGODB
 	}
-    public static final String CHURCH_NAME_KEY = "ChurchName"; 
+
+	public static final String CHURCH_NAME_KEY = "ChurchName"; 
     public static final String CHURCH_ADDRESS_KEY = "ChurchAddress";
     public static final String CATEGORIES_KEY = "Categories";
     public static final String ADDRESS1 = "Address1";
